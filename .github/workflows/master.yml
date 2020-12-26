@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      ACR_PATH: imagefind.azurecr.io
+      ACR_PATH: imagefind.azurecr.io/imagefind
       RELEASE_VERSION: 1.0
     steps:
       - uses: actions/checkout@v2
