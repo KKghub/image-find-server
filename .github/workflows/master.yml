@@ -13,10 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: azure/docker-login@v1
-          with:
-            login-server: imagefind.azurecr.io
-            username: ${{ secrets.ACR_USERNAME }}
-            password: ${{ secrets.ACR_PASSWORD }}
+        with:
+          login-server: imagefind.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
       - name: Publish To ACR
         run: |
           echo Publishing to $ACR_PATH:$RELEASE_VERSION
