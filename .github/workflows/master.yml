@@ -1,0 +1,26 @@
+name: master workflow
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      ACR_PATH: imagefind.azurecr.io
+      RELEASE_VERSION: 1.0
+    steps:
+      - uses: actions/checkout@v2
+      - uses: azure/docker-login@v1
+          with:
+            login-server: imagefind.azurecr.io
+            username: ${{ secrets.ACR_USERNAME }}
+            password: ${{ secrets.ACR_PASSWORD }}
+      - name: Publish To ACR
+        run: |
+          echo Publishing to $ACR_PATH:$RELEASE_VERSION
+          docker build . --build-arg RELEASE_VERSION=$RELEASE_VERSION -t $ACR_PATH:$RELEASE_VERSION
+          docker tag $ACR_PATH:$RELEASE_VERSION $ACR_PATH:latest
+          docker push $ACR_PATH:$RELEASE_VERSION
+          docker push $ACR_PATH:latest
