@@ -47,7 +47,7 @@ class ImageRetrieval:
                     try:
                         print(img_path)
                         # try:
-                        fd = ','.join([str(i) for i in self.get_grape_features(os.path.join(img_dir, img_path))])
+                        fd = ','.join([str(i) for i in self.get_image_features(os.path.join(img_dir, img_path))])
                         fd += ',' + str(label) + '\n'
                         data_file.write(fd)
 
@@ -84,7 +84,7 @@ class ImageRetrieval:
         pca = joblib.load("pca.pkl")
 
         print(mapper)
-        a = self.get_grape_features(image_path)
+        a = self.get_image_features(image_path)
         a = a.reshape(1, -1)
         a = pca.transform(a)
         print(mapper.get(int(clf.predict(a)[0])))
@@ -115,7 +115,7 @@ class ImageRetrieval:
                 average_equivalent_diameter,
                 average_euler_number, mean_intensity, dissimilarity, correlation, energy, homogeneity, ASM, contrast]
 
-    def get_grape_features(self, image_path):
+    def get_image_features(self, image_path):
         bins = 8
         image = cv2.imread(image_path)
         image = cv2.resize(image, (200, 200))
