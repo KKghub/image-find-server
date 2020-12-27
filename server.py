@@ -14,7 +14,7 @@ CORS(app)
 def post_query_image():
     image = request.files.get('image')  # type: FileStorage
     # print(request.files)
-    image.save(os.path.join(constants.QUERY_IMAGE))
+    image.save(os.path.join(os.getcwd(), constants.QUERY_IMAGE_FOLDER, constants.QUERY_IMAGE))
     # return Response(status=204)
     return Response("{'a':'b'}", status=200, mimetype='application/json')
 
@@ -39,7 +39,7 @@ def get_results():
 def get_image():
     print("1")
     filename = request.args.get("name")
-    filenamepath = os.path.join(constants.DATASET_IMAGES_FOLDER, filename)
+    filenamepath = os.path.join(os.getcwd(), constants.DATASET_IMAGES_FOLDER, filename)
 
     image = Image.open(filenamepath)
     image_byte_array = io.BytesIO()
@@ -56,7 +56,7 @@ def get_image():
 def get_image_by_class(class_name):
     print("1")
     filename = request.args.get("name")
-    filenamepath = os.path.join(constants.CLASSIFIED_DATASET_IMAGES_FOLDER, class_name, filename)
+    filenamepath = os.path.join(os.getcwd(), constants.CLASSIFIED_DATASET_IMAGES_FOLDER, class_name, filename)
 
     print(os.path.exists(filenamepath))
     print(filenamepath)
