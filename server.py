@@ -1,5 +1,6 @@
 import io
 import json
+import numpy as np
 from flask_cors import CORS
 from flask import Flask, request, Response
 from werkzeug.datastructures import FileStorage
@@ -8,6 +9,24 @@ from utilities import *
 
 app = Flask(__name__)
 CORS(app)
+
+
+@app.route('/predict', methods=['POST'])
+def predict_image():
+    file = request.files.get('image')  # type: FileStorage
+    image = Image.open(file)
+    image = np.array(image)
+
+    results = Search().results_by_image(image)
+    payload = json.dumps(results).encode()
+    return Response(
+        payload,
+        status=200,
+        mimetype="application/json"
+        # headers={
+        #     "Content-Disposition": "attachment;filename=".join(filenamepath)
+        # }
+    )
 
 
 @app.route('/queryImage', methods=['POST'])

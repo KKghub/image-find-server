@@ -90,9 +90,26 @@ class ImageRetrieval:
         print(mapper.get(int(clf.predict(a)[0])))
         return mapper.get(int(clf.predict(a)[0]))
 
+    def predict_by_image(self, image):
+        print(os.getcwd())
+        clf = joblib.load('model.pkl')
+        mapper = joblib.load('mapper.pkl')
+        pca = joblib.load("pca.pkl")
+
+        print(mapper)
+        print('1')
+        a = self.get_image_features_by_image(image)
+        print('2')
+        a = a.reshape(1, -1)
+        a = pca.transform(a)
+        print(clf.predict(a)[0])
+        print(mapper.get(int(clf.predict(a)[0])))
+        return mapper.get(int(clf.predict(a)[0]))
+
     # return mapper.get()
 
-    def extract_features(self, regionprops, image):
+    @staticmethod
+    def extract_features(regionprops, image):
 
         region_count = len(regionprops)
 
@@ -118,6 +135,22 @@ class ImageRetrieval:
     def get_image_features(self, image_path):
         bins = 8
         image = cv2.imread(image_path)
+        image = cv2.resize(image, (200, 200))
+        hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        hist = cv2.calcHist([hsv_image], [0, 1, 2], None, [bins, bins, bins], [0, 256, 0, 256, 0, 256])  # flating
+        cv2.normalize(hist, hist)
+        features = hist.flatten()
+        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        std_image = np.float32(gray_image) / 255.0
+        dct = cv2.dct(std_image)
+
+        features = np.concatenate((features, dct), axis=None)
+
+        # print(final_features.shape)
+        return features
+
+    def get_image_features_by_image(self, image):
+        bins = 8
         image = cv2.resize(image, (200, 200))
         hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         hist = cv2.calcHist([hsv_image], [0, 1, 2], None, [bins, bins, bins], [0, 256, 0, 256, 0, 256])  # flating
