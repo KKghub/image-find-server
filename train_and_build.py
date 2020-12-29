@@ -1,4 +1,4 @@
-import image_retrieval
+from ImageRetrieval import ImageRetrieval
 
-image_retrieval.build_feature_file()
-image_retrieval.learn()
+ImageRetrieval().build_feature_file()
+ImageRetrieval().learn()
