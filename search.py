@@ -1,4 +1,4 @@
-from ImageRetrieval import *
+from image_retrieval import *
 
 
 class Search:

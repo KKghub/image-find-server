@@ -4,7 +4,7 @@ from flask_cors import CORS
 from flask import Flask, request, Response
 from werkzeug.datastructures import FileStorage
 from PIL import Image
-from utilities import *
+from search import *
 
 app = Flask(__name__)
 CORS(app)
