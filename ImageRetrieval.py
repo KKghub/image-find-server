@@ -1,21 +1,9 @@
 import cv2
-# import math
-# import re
 import constants
 import numpy as np
-# import matplotlib.pyplot as plt
-# import matplotlib.patches as mpatches
+from sklearn import svm
 from sklearn.decomposition import PCA
-# from skimage import data, io, exposure
-# from skimage.filters import threshold_otsu
-# from skimage.measure import label
-# from skimage.morphology import closing, square, opening, disk
-# from skimage.measure import regionprops, perimeter
-# from skimage.color import label2rgb, rgb2lab, rgb2hsv
-# from skimage.util.shape import view_as_blocks
-# from skimage.transform import resize
 import joblib
-# from skimage.segmentation import clear_border
 from skimage.feature import greycomatrix, greycoprops
 import os
 
@@ -58,13 +46,9 @@ class ImageRetrieval:
 
         joblib.dump(mapper, 'mapper.pkl')
 
-    def save_model(self, clf):
-        joblib.dump(clf, 'model.pkl')
-
-    def learn(self):
-        from sklearn import svm
+    @staticmethod
+    def learn():
         d = np.genfromtxt('datafile.csv', delimiter=',')
-        print(d.shape)
         X = d[:, :d.shape[1] - 1]
         y = d[:, d.shape[1] - 1]
 
@@ -74,36 +58,19 @@ class ImageRetrieval:
         clf = svm.SVC()
         clf.fit(X, y)
         # save model
-        self.save_model(clf)
+        joblib.dump(clf, 'model.pkl')
+        # save PCA
         joblib.dump(pca, "pca.pkl")
 
-    def predict(self, image_path):
-        print(os.getcwd())
+    def predict(self, image):
         clf = joblib.load('model.pkl')
         mapper = joblib.load('mapper.pkl')
         pca = joblib.load("pca.pkl")
 
-        print(mapper)
-        a = self.get_image_features(image_path)
+        a = self.get_image_features(image)
         a = a.reshape(1, -1)
         a = pca.transform(a)
-        print(mapper.get(int(clf.predict(a)[0])))
-        return mapper.get(int(clf.predict(a)[0]))
 
-    def predict_by_image(self, image):
-        print(os.getcwd())
-        clf = joblib.load('model.pkl')
-        mapper = joblib.load('mapper.pkl')
-        pca = joblib.load("pca.pkl")
-
-        print(mapper)
-        print('1')
-        a = self.get_image_features_by_image(image)
-        print('2')
-        a = a.reshape(1, -1)
-        a = pca.transform(a)
-        print(clf.predict(a)[0])
-        print(mapper.get(int(clf.predict(a)[0])))
         return mapper.get(int(clf.predict(a)[0]))
 
     # return mapper.get()
@@ -132,24 +99,8 @@ class ImageRetrieval:
                 average_equivalent_diameter,
                 average_euler_number, mean_intensity, dissimilarity, correlation, energy, homogeneity, ASM, contrast]
 
-    def get_image_features(self, image_path):
-        bins = 8
-        image = cv2.imread(image_path)
-        image = cv2.resize(image, (200, 200))
-        hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-        hist = cv2.calcHist([hsv_image], [0, 1, 2], None, [bins, bins, bins], [0, 256, 0, 256, 0, 256])  # flating
-        cv2.normalize(hist, hist)
-        features = hist.flatten()
-        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        std_image = np.float32(gray_image) / 255.0
-        dct = cv2.dct(std_image)
-
-        features = np.concatenate((features, dct), axis=None)
-
-        # print(final_features.shape)
-        return features
-
-    def get_image_features_by_image(self, image):
+    @staticmethod
+    def get_image_features(image):
         bins = 8
         image = cv2.resize(image, (200, 200))
         hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -162,7 +113,6 @@ class ImageRetrieval:
 
         features = np.concatenate((features, dct), axis=None)
 
-        # print(final_features.shape)
         return features
 
 # if __name__ == '__main__':

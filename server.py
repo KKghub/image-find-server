@@ -1,6 +1,5 @@
 import io
 import json
-import numpy as np
 from flask_cors import CORS
 from flask import Flask, request, Response
 from werkzeug.datastructures import FileStorage
@@ -17,46 +16,17 @@ def predict_image():
     image = Image.open(file)
     image = np.array(image)
 
-    results = Search().results_by_image(image)
+    results = Search().results(image)
     payload = json.dumps(results).encode()
     return Response(
         payload,
         status=200,
         mimetype="application/json"
-        # headers={
-        #     "Content-Disposition": "attachment;filename=".join(filenamepath)
-        # }
-    )
-
-
-@app.route('/queryImage', methods=['POST'])
-def post_query_image():
-    image = request.files.get('image')  # type: FileStorage
-    # print(request.files)
-    image.save(os.path.join(os.getcwd(), constants.QUERY_IMAGE_FOLDER, constants.QUERY_IMAGE))
-    # return Response(status=204)
-    return Response("{'a':'b'}", status=200, mimetype='application/json')
-
-
-@app.route('/getResults', methods=['GET'])
-def get_results():
-    results = Search().results()
-
-    payload = json.dumps(results).encode()
-
-    return Response(
-        payload,
-        status=200,
-        mimetype="application/json"
-        # headers={
-        #     "Content-Disposition": "attachment;filename=".join(filenamepath)
-        # }
     )
 
 
 @app.route('/getImage', methods=['GET'])
 def get_image():
-    print("1")
     filename = request.args.get("name")
     filenamepath = os.path.join(os.getcwd(), constants.DATASET_IMAGES_FOLDER, filename)
 
@@ -73,18 +43,12 @@ def get_image():
 
 @app.route('/getImage/<class_name>', methods=['GET'])
 def get_image_by_class(class_name):
-    print("1")
     filename = request.args.get("name")
     filenamepath = os.path.join(os.getcwd(), constants.CLASSIFIED_DATASET_IMAGES_FOLDER, class_name, filename)
 
-    print(os.path.exists(filenamepath))
-    print(filenamepath)
     image = Image.open(filenamepath)
-    print("2")
     image_byte_array = io.BytesIO()
-    print("3")
     image.save(image_byte_array, format=image.format)
-    print("4")
     image_byte_array = image_byte_array.getvalue()
 
     return Response(
