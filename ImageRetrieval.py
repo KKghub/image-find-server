@@ -35,7 +35,7 @@ class ImageRetrieval:
                     try:
                         print(img_path)
                         # try:
-                        fd = ','.join([str(i) for i in self.get_image_features(os.path.join(img_dir, img_path))])
+                        fd = ','.join([str(i) for i in self.get_image_features_by_path(os.path.join(img_dir, img_path))])
                         fd += ',' + str(label) + '\n'
                         data_file.write(fd)
 
@@ -98,6 +98,10 @@ class ImageRetrieval:
         return [region_count, average_eccentricity, average_perimeter, max_area, average_area,
                 average_equivalent_diameter,
                 average_euler_number, mean_intensity, dissimilarity, correlation, energy, homogeneity, ASM, contrast]
+
+    def get_image_features_by_path(self, image_path):
+        image = cv2.imread(image_path)
+        return self.get_image_features(image)
 
     @staticmethod
     def get_image_features(image):
