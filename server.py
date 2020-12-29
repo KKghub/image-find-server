@@ -1,10 +1,13 @@
 import io
 import json
+import os
+import constants
 from flask_cors import CORS
 from flask import Flask, request, Response
+import numpy as np
 from werkzeug.datastructures import FileStorage
 from PIL import Image
-from utilities import *
+import search
 
 app = Flask(__name__)
 CORS(app)
@@ -16,7 +19,7 @@ def predict_image():
     image = Image.open(file)
     image = np.array(image)
 
-    results = Search().results(image)
+    results = search.results(image)
     payload = json.dumps(results).encode()
     return Response(
         payload,
@@ -27,10 +30,10 @@ def predict_image():
 
 @app.route('/getImage', methods=['GET'])
 def get_image():
-    filename = request.args.get("name")
-    filenamepath = os.path.join(os.getcwd(), constants.DATASET_IMAGES_FOLDER, filename)
+    file_name = request.args.get("name")
+    file_path = os.path.join(os.getcwd(), constants.DATASET_IMAGES_FOLDER, file_name)
 
-    image = Image.open(filenamepath)
+    image = Image.open(file_path)
     image_byte_array = io.BytesIO()
     image.save(image_byte_array, format=image.format)
     image_byte_array = image_byte_array.getvalue()
@@ -43,10 +46,10 @@ def get_image():
 
 @app.route('/getImage/<class_name>', methods=['GET'])
 def get_image_by_class(class_name):
-    filename = request.args.get("name")
-    filenamepath = os.path.join(os.getcwd(), constants.CLASSIFIED_DATASET_IMAGES_FOLDER, class_name, filename)
+    file_name = request.args.get("name")
+    file_path = os.path.join(os.getcwd(), constants.CLASSIFIED_DATASET_IMAGES_FOLDER, class_name, file_name)
 
-    image = Image.open(filenamepath)
+    image = Image.open(file_path)
     image_byte_array = io.BytesIO()
     image.save(image_byte_array, format=image.format)
     image_byte_array = image_byte_array.getvalue()
@@ -58,4 +61,4 @@ def get_image_by_class(class_name):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=True)
