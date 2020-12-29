@@ -1,10 +1,13 @@
 import io
 import json
+import numpy as np
+import os
 from flask_cors import CORS
 from flask import Flask, request, Response
 from werkzeug.datastructures import FileStorage
 from PIL import Image
-from search import *
+import constants
+import search
 
 app = Flask(__name__)
 CORS(app)
@@ -16,7 +19,7 @@ def predict_image():
     image = Image.open(file)
     image = np.array(image)
 
-    results = Search().results(image)
+    results = search.results(image)
     payload = json.dumps(results).encode()
     return Response(
         payload,
